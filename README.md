@@ -17,16 +17,14 @@ external_components:
   - source: github://mvonweis/esphome-chsc5816
     components: [ chsc5816 ]
 
+# The touchscreen part. First set up the internal I2C bus on pins 5 and 6, then activate
+# the CHSC5816 chip on pins 8 and 9. Add two triggers, one for touch and one for swipe.
+# Note that one of the QWIIC connectors has another I2C bus on pins 15 and 16.
+
 i2c:
   - id: i2c_bus_touch
     sda: GPIO5
     scl: GPIO6
-
-spi:
-  id: display_qspi
-  type: quad
-  clk_pin: GPIO12
-  data_pins: [GPIO11, GPIO13, GPIO7, GPIO14]
 
 touchscreen:
   - platform: chsc5816
@@ -54,6 +52,14 @@ touchscreen:
               }
             }
           }
+
+# Now set up the display on a quad SPI bus. It requires an init sequence.
+
+spi:
+  id: display_qspi
+  type: quad
+  clk_pin: GPIO12
+  data_pins: [GPIO11, GPIO13, GPIO7, GPIO14]
 
 display:
   - platform: qspi_dbi
@@ -90,12 +96,14 @@ display:
       # - [0x58, 0x07]  # High Contrast Mode High
       - delay 10ms
 
+# Set up the rotary encoder and push button on the Lilygo T-Encoder Pro.
+
 sensor:
   - platform: rotary_encoder
     id: device_rotary_encoder
     pin_a: GPIO1
     pin_b: GPIO2
-    resolution: 2 # Seems to work better with 2 than 1 or 4
+    resolution: 2 # Seems to work better with this value, rather than 1 or 4
 
 binary_sensor:
   - platform: gpio
@@ -103,5 +111,20 @@ binary_sensor:
     pin:
       number: GPIO0
       ignore_strapping_warning: True
+
+# Two scripts triggered by touchscreen swipes. 
+
+script:
+  - id: swipe_left
+    then:
+      - lvgl.page.previous:
+          animation: OUT_LEFT
+          time: 300ms
+
+  - id: swipe_right
+    then:
+      - lvgl.page.next:
+            animation: OUT_RIGHT
+            time: 300ms
 
 ```
