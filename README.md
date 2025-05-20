@@ -14,6 +14,9 @@ substitutions:
   touch_pin_i2c_int: "GPIO9"
   touch_pin_i2c_rst: "GPIO8"
 
+external_components:
+  - source: github://mvonweis/esphome-chsc5816
+    components: [ chsc5816 ]
 
 i2c:
   - id: i2c_bus_touch
