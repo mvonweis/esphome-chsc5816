@@ -32,15 +32,15 @@ i2c:
 touchscreen:
   - platform: chsc5816
     id: device_lilygo_tencoderpro_touch
- #   address: 0x2E
     i2c_id: i2c_bus_touch
+    # address: 0x2E # Not needed, since this seems to be the only device on this bus.
     display: device_lilygo_display
-    interrupt_pin: GPIO9
     reset_pin: GPIO8
-    on_touch: # Just logging the touches here
+    interrupt_pin: GPIO9
+    on_touch: # Just logging
       - lambda: |-
           ESP_LOGI("Touch on_touch:", "id=%d x=%d, y=%d", touch.id, touch.x, touch.y);
-    on_update: # Our best attempt at detecting swipes
+    on_update: # Our best attempt at detecting swipes and triggering scripts
       - lambda: |-
           for (auto touch: touches)  {
             if (touch.state == 2) {
@@ -56,7 +56,7 @@ touchscreen:
             }
           }
 
-# Now set up the display on a quad SPI bus. It requires an init sequence.
+# Now set up the LilyGo display on the quad SPI bus. It requires an init sequence.
 
 spi:
   id: display_qspi
@@ -106,7 +106,7 @@ sensor:
     id: device_rotary_encoder
     pin_a: GPIO1
     pin_b: GPIO2
-    resolution: 2 # Seems to work better with this value, rather than 1 or 4
+    resolution: 2 # Seems to work best with resolution 2 (tried 1 and 4).
 
 binary_sensor:
   - platform: gpio
