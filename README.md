@@ -33,6 +33,24 @@ touchscreen:
     display: device_lilygo_display
     interrupt_pin: GPIO9
     reset_pin: GPIO8
+    on_touch: # Just logging the touches here
+      - lambda: |-
+          ESP_LOGI("Touch on_touch:", "id=%d x=%d, y=%d", touch.id, touch.x, touch.y);
+    on_update: # Our best attempt at detecting swipes
+      - lambda: |-
+          for (auto touch: touches)  {
+            if (touch.state == 2) {
+              ESP_LOGI("Touch on_update:", "id=%d, s=%d, x=%d, y=%d", touch.id, touch.state, touch.x, touch.y);
+            } else if (touch.state == 6) {
+              if (touch.x_org > touch.x_prev) {
+                ESP_LOGE("Touch on_update", "Detected RIGHT to LEFT swipe");
+                id(swipe_left).execute();
+              } else if (touch.x_org < touch.x_prev) {
+                ESP_LOGE("Touch on_update", "Detected LEFT to RIGHT swipe");
+                id(swipe_right).execute();
+              }
+            }
+          }
 
 display:
   - platform: qspi_dbi
