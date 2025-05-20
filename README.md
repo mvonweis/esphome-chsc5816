@@ -2,7 +2,7 @@
 
 This is an ESPHome component for the CHSC5816 touchscreen driver, which can be found e.g. in the LilyGo T-Encoder Pro. The code is based on the Arduino ESP32 libraries (v3.0.7).
 
-The component works and the code is stable but doesn't look very nice. In our limited testing, the touchscreen is not entirely responsive.
+The component works and the code is stable but doesn't look very nice. In our limited testing, the touchscreen is not entirely responsive, especially when swiping.
 
 
 ## YAML snippet for ESPHome
