@@ -13,13 +13,16 @@ This is an ESPHome component for the CHSC5816 touchscreen controller, which can 
 The pinouts below are for the LilyGo T-Encoder Pro.
 
 ```
+# Include this CHSC5816 component.
+
 external_components:
   - source: github://mvonweis/esphome-chsc5816
     components: [ chsc5816 ]
 
-# The touchscreen part. First set up the internal I2C bus on pins 5 and 6, then activate
-# the CHSC5816 chip on pins 8 and 9. Add two triggers, one for touch and one for swipe.
-# Note that one of the QWIIC connectors has another I2C bus on pins 15 and 16.
+# The touchscreen part. First set up the internal I2C bus on pins 5 and 6, then the
+# CHSC5816 chip on pins 8 and 9. Add two triggers, one for touch and one for swipe.
+# Note that there is another I2C bus on pins 15 and 16 connected to one of the QWIIC
+# connectors.
 
 i2c:
   - id: i2c_bus_touch
