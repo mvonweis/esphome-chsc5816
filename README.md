@@ -1,6 +1,8 @@
 # esphome-chsc5816
 
-This is an ESPHome component for the CHSC5816 touchscreen controller, which can be found e.g. in the LilyGo T-Encoder Pro. Our code is based on the snippets provided in the [CHSC5816 Touch Control Chip User Manual V1](https://github.com/lewisxhe/SensorLib/blob/master/datasheet/CHSC5816%E8%A7%A6%E6%8E%A7%E8%8A%AF%E7%89%87%E4%BD%BF%E7%94%A8%E8%AF%B4%E6%98%8EV1-20221114.pdf) provided by the manufacturer, Chipsemi.
+This is an ESPHome component for the CHSC5816 touchscreen controller, which can be found e.g. in the [LilyGo T-Encoder Pro](https://github.com/Xinyuan-LilyGO/T-Encoder-Pro/tree/arduino-esp32-libs_V2.0.14).
+
+Our code is based on the snippets provided in the [CHSC5816 Touch Control Chip User Manual V1](https://github.com/lewisxhe/SensorLib/blob/master/datasheet/CHSC5816%E8%A7%A6%E6%8E%A7%E8%8A%AF%E7%89%87%E4%BD%BF%E7%94%A8%E8%AF%B4%E6%98%8EV1-20221114.pdf) provided by the chip manufacturer, Chipsemi.
 
 ## Shortcomings
 
@@ -11,7 +13,7 @@ This is an ESPHome component for the CHSC5816 touchscreen controller, which can 
 
 ## YAML snippet for ESPHome
 
-The pinouts below are for the LilyGo T-Encoder Pro.
+The pinouts below are for the LilyGo T-Encoder Pro. Other ESP32 devices may use different pinouts and may not have the button and rotary encoder found on the LilyGo. 
 
 ```
 # Include this CHSC5816 component.
