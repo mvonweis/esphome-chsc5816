@@ -2,26 +2,28 @@
 
 This is an ESPHome component for the CHSC5816 touchscreen driver, which can be found e.g. in the LilyGo T-Encoder Pro. The code is based on the Arduino ESP32 libraries (v3.0.7).
 
-The component works, but the code doesn't look very nice.
+The component works and the code is stable but doesn't look very nice. In our limited testing, the touchscreen is not entirely responsive.
 
 
 ## YAML snippet for ESPHome
 
-```
-substitutions:
-  touch_pin_i2c_sda: "GPIO5" # For the LilyGo T-Encoder Pro
-  touch_pin_i2c_scl: "GPIO6"
-  touch_pin_i2c_int: "GPIO9"
-  touch_pin_i2c_rst: "GPIO8"
+The pinouts below are for the LilyGo T-Encoder Pro.
 
+```
 external_components:
   - source: github://mvonweis/esphome-chsc5816
     components: [ chsc5816 ]
 
 i2c:
   - id: i2c_bus_touch
-    sda: ${touch_pin_i2c_sda}
-    scl: ${touch_pin_i2c_scl}
+    sda: GPIO5
+    scl: GPIO6
+
+spi:
+  id: display_qspi
+  type: quad
+  clk_pin: GPIO12
+  data_pins: [GPIO11, GPIO13, GPIO7, GPIO14]
 
 touchscreen:
   - platform: chsc5816
@@ -29,11 +31,56 @@ touchscreen:
  #   address: 0x2E
     i2c_id: i2c_bus_touch
     display: device_lilygo_display
-    interrupt_pin: ${touch_pin_i2c_int}
-    reset_pin: ${touch_pin_i2c_rst}
+    interrupt_pin: GPIO9
+    reset_pin: GPIO8
 
 display:
   - platform: qspi_dbi
     id: device_lilygo_display
-    # Etc.
+    dimensions:
+      width: 390
+      height: 390
+    model: CUSTOM
+    cs_pin: GPIO10
+    reset_pin: GPIO4
+    enable_pin:
+      number: GPIO3
+      ignore_strapping_warning: true
+    rotation: 0
+    invert_colors: false
+    draw_from_origin: true
+    auto_clear_enabled: false
+    update_interval: never
+    init_sequence:
+      - [0x01]  # Software Reset
+      - delay 200ms
+      - [0x11]  # Sleep Out
+      - delay 120ms
+      - [0x13]  # Normal Display Mode On
+      - [0x20]  # Display Inversion Off
+      - [0x3A, 0x05] # Interface Pixel Format 16bit/pixel
+      - [0x29]  # Display On
+      - [0x53, 0x28]  # Brightness Control On and Display Dimming On
+      - [0x51, 0x00]  # Brightness Adjustment
+      # High contrast mode (Sunlight Readability Enhancement)
+      - [0x58, 0x00]  # High Contrast Mode Off
+      # - [0x58, 0x05]  # High Contrast Mode Low
+      # - [0x58, 0x06]  # High Contrast Mode Med
+      # - [0x58, 0x07]  # High Contrast Mode High
+      - delay 10ms
+
+sensor:
+  - platform: rotary_encoder
+    id: device_rotary_encoder
+    pin_a: GPIO1
+    pin_b: GPIO2
+    resolution: 2 # Seems to work better with 2 than 1 or 4
+
+binary_sensor:
+  - platform: gpio
+    id: device_button_press
+    pin:
+      number: GPIO0
+      ignore_strapping_warning: True
+
 ```
