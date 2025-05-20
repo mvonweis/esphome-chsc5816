@@ -1,6 +1,6 @@
 # esphome-chsc5816
 
-This is an ESPHome component for the CHSC5816 touchscreen controller, which can be found e.g. in the LilyGo T-Encoder Pro. The code is based on the Arduino ESP32 libraries (v3.0.7).
+This is an ESPHome component for the CHSC5816 touchscreen controller, which can be found e.g. in the LilyGo T-Encoder Pro. The code is based on the [sample code](https://github.com/Xinyuan-LilyGO/T-Encoder-Pro/blob/arduino-esp32-libs_V3.0.7/examples/CHSC5816/CHSC5816.ino) for that device.
 
 The component works and the code is stable but doesn't look very nice. In our limited testing, the touchscreen is not entirely responsive, especially when swiping.
 
