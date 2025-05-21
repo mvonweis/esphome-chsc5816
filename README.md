@@ -2,7 +2,7 @@
 
 This is an ESPHome component for the CHSC5816 touchscreen controller, which can be found e.g. in the [LilyGo T-Encoder Pro](https://github.com/Xinyuan-LilyGO/T-Encoder-Pro/tree/arduino-esp32-libs_V3.0.7).
 
-Our code is based on the snippets provided in the [CHSC5816 Touch Control Chip User Manual V1](https://github.com/lewisxhe/SensorLib/blob/master/datasheet/CHSC5816%E8%A7%A6%E6%8E%A7%E8%8A%AF%E7%89%87%E4%BD%BF%E7%94%A8%E8%AF%B4%E6%98%8EV1-20221114.pdf) provided by the chip manufacturer, Chipsemi.
+Our code is based on the snippets provided in the [CHSC5816 Touch Control Chip User Manual V1](https://github.com/lewisxhe/SensorLib/blob/master/datasheet/CHSC5816%E8%A7%A6%E6%8E%A7%E8%8A%AF%E7%89%87%E4%BD%BF%E7%94%A8%E8%AF%B4%E6%98%8EV1-20221114.pdf) provided by the chip manufacturer, Chipsemi. We also studied [LilyGo's example .ino](https://github.com/Xinyuan-LilyGO/T-Encoder-Pro/blob/arduino-esp32-libs_V3.0.7/examples/CHSC5816/CHSC5816.ino) but found it to be less useful.
 
 ## Shortcomings
 
