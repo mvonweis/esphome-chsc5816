@@ -118,19 +118,24 @@ void CHSC5816Touchscreen::update_touches() {
 
   ppt = (union _rpt_point_t*)&data[2];
 
-  if ((data[0] == 0xff) && (data[1] <= 2)) {
-    if (data [1] > 0) {
+  if ((data[0] == 0xff) && // normal touch event
+  		(data[1] <= 2)) { // ... with finger 0x00 or 0x01
+    if (data[1] > 0) { // straight from the docs, even though data[1] is an uint??
       pointed = 1;
       x = (unsigned int) (ppt->x_h4 << 8) | ppt->x_l8;
       y = (unsigned int) (ppt->y_h4 << 8) | ppt->y_l8;
-      ESP_LOGD(TAG, "CHSC5816 touch point at: %d %d", x, y);
+      if ((ppt->z & 0xF) == 0x8) {
+        ESP_LOGD(TAG, "CHSC5816 touch swipe at: %d %d with dir %d",
+            x, y, (ppt->z >> 4));
+      } else {
+        ESP_LOGD(TAG, "CHSC5816 touch point at: %d %d", x, y);
+      }
       this->add_raw_touch_position_(0, x, y);
     }
   } else {
     ESP_LOGE(TAG, "CHSC5816 touch, could not parse data");
     return;
   }
-  
 }
 
 void CHSC5816Touchscreen::dump_config() {
