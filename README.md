@@ -15,6 +15,8 @@ The component works and seems to be stable.
 
 ## YAML snippets for ESPHome
 
+There is a sample file `lilygo-touchscreen-test.yaml` that compiles and installs on the Lilygo T-Encoder Pro using ESPHome 2025.6.0.
+
 ### Touchscreen setup
 
 First, include the CHSC5816 component from this github repo.
