@@ -1,0 +1,251 @@
+substitutions:
+  device_type: "lilygo-encoderpro"
+  device_subtype: "v0.0.0"
+  device_name: "lilygo-touchscreen-test"
+  
+  
+external_components:
+  - source: github://mvonweis/esphome-chsc5816
+    components: [ chsc5816 ]
+
+
+esphome:
+  name: ${device_name}
+  friendly_name: ${device_name}
+  min_version: 2024.11.0
+  name_add_mac_suffix: false
+  platformio_options:
+    board_build.flash_mode: dio
+    board_build.esp-idf.memory_type: qio_opi
+
+
+esp32:
+  board: esp32-s3-devkitc-1
+  variant: esp32s3
+  framework:
+    type: esp-idf
+  flash_size: 16MB
+
+
+psram:
+  mode: octal
+  speed: 80MHz
+
+
+logger:
+  level: DEBUG
+
+
+api:
+  reboot_timeout: 0s
+
+
+ota:
+  platform: esphome
+
+
+wifi:
+  ssid: !secret wifi_ssid
+  password: !secret wifi_password
+
+
+web_server:
+  version: 3
+  port: 80
+
+
+captive_portal:
+
+
+i2c:
+  - id: i2c_bus_sensor
+    sda: GPIO16
+    scl: GPIO15
+#    scan: true
+  - id: i2c_bus_touch
+    sda: GPIO5
+    scl: GPIO6
+#    scan: true
+
+touchscreen:
+  - platform: chsc5816
+    id: device_lilygo_tencoderpro_touch
+    i2c_id: i2c_bus_touch
+    # address: 0x2E # Not needed on the T-Encoder Pro, since there's only one device on this bus.
+    display: device_lilygo_display
+    reset_pin: GPIO8
+    interrupt_pin: GPIO9
+
+    on_touch:
+      - lambda: |-
+          ESP_LOGD("Touch on_touch", "(%d,%d) id=%d", touch.x, touch.y, touch.id);
+
+
+spi:
+  id: display_qspi
+  type: quad
+  clk_pin: GPIO12
+  data_pins: [GPIO11, GPIO13, GPIO7, GPIO14]
+
+
+display:
+  - platform: qspi_dbi
+    id: device_lilygo_display
+    dimensions: 
+      width: 390
+      height: 390
+    model: CUSTOM
+    cs_pin: GPIO10
+    reset_pin: GPIO4
+    enable_pin: GPIO3
+    rotation: 0
+    invert_colors: false
+    draw_from_origin: true
+    auto_clear_enabled: false
+    update_interval: never
+    init_sequence:
+      - [0x01]  # Software Reset
+      - delay 200ms
+      - [0x11]  # Sleep Out
+      - delay 120ms
+      - [0x13]  # Normal Display Mode On
+      - [0x20]  # Display Inversion Off
+      - [0x3A, 0x05] # Interface Pixel Format 16bit/pixel
+      - [0x29]  # Display On
+      - [0x53, 0x28]  # Brightness Control On and Display Dimming On
+      - [0x51, 0x00]  # Brightness Adjustment
+      # High contrast mode (Sunlight Readability Enhancement)
+      - [0x58, 0x00]  # High Contrast Mode Off
+      # - [0x58, 0x05]  # High Contrast Mode Low
+      # - [0x58, 0x06]  # High Contrast Mode Med
+      # - [0x58, 0x07]  # High Contrast Mode High
+      - delay 10ms
+
+
+color:
+  - id: color_background
+    red: 0%
+    green: 0%
+    blue: 0%
+  - id: color_foreground
+    red: 100%
+    green: 100%
+    blue: 100%
+  - id: color_foreground_dim
+    red: 50%
+    green: 55%
+    blue: 50%
+  - id: color_highlight
+    red: 30%
+    green: 100%
+    blue: 30%
+  - id: color_temp_cold
+    hex: 3366FF
+  - id: color_temp_hot
+    hex: FF6633
+  - id: c_blue # #005eae
+    red: 0% # 0 = 0
+    green: 36.72% # 5e = 94
+    blue: 67.97% # ae = 174 
+  - id: c_red # #97440a
+    red: 37.89% # 97 = 151
+    green: 26.56% # 44 = 68
+    blue: 3.91% # 0a = 10 
+  - id: c_emerald
+    red: 21.09% # 54
+    green: 40.23% # 103
+    blue: 20.70% #53
+
+font:
+  - file:
+      type: gfonts
+      family: "Saira Semi Condensed"
+      weight: 600
+    id: saira_sm
+    size: 36
+    bpp: 4
+
+
+lvgl:
+  theme:
+    label:
+      text_font: saira_sm # set all your labels to use your custom defined font
+      bg_color: color_background
+      text_color: color_foreground
+
+  style_definitions:
+    - id: black_background
+      bg_color: 0x000000
+      bg_opa: 100%  # Fully opaque
+
+#  top_layer:
+#    widgets:
+    
+  pages:
+    - id: main_page
+      scrollbar_mode: "OFF"
+      styles: black_background
+      widgets:
+        - obj:
+            height: 100%
+            width: 100%
+            align: CENTER
+            bg_color: color_background
+            border_width: 0
+            pad_all: 16
+            widgets:
+              - slider:
+                  id: slider_media_player
+                  x: 180
+                  y: 50
+                  width: 30
+                  height: 290
+                  pad_all: 8
+                  min_value: 0
+                  max_value: 100
+
+sensor:
+  - platform: rotary_encoder
+    id: screen_rotate
+    pin_a: GPIO1
+    pin_b: GPIO2
+    resolution: 2 # Seems to work best with resolution 2
+
+    on_clockwise:
+      - logger.log: 
+          format: "Turned Clockwise"
+          level: DEBUG
+#          else:
+    #      - lvgl.page.next:
+    #          animation: OUT_LEFT
+    #          time: 300ms
+ #         - rtttl.play: "success:d=24,o=5,b=100:c,g,b"
+
+    on_anticlockwise:
+      - logger.log: 
+          format: "Turned Anti Clockwise"
+          level: DEBUG
+
+
+binary_sensor:
+
+  - platform: gpio
+    id: screen_press
+    pin:
+      number: 0
+    on_press:
+      - logger.log:
+          format: 'Button Pressed!'
+          level: DEBUG
+
+
+output:
+  - platform: ledc
+    pin: 17
+    id: buzzer
+
+
+rtttl:
+  output: buzzer
+  id: my_rtttl
+  gain: 60%  
