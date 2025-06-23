@@ -45,12 +45,14 @@ touchscreen:
     interrupt_pin: GPIO9
 
 # Log the touches (change this to ESP_LOGD for debug-level logging).
+
     on_touch:
       - lambda: |-
           ESP_LOGI("Touch on_touch:", "id=%d x=%d, y=%d", touch.id, touch.x, touch.y);
           
 # This is our best attempt at detecting swipes and triggering scripts. 30 pixels translates to
 # around 3 mm on the T-Encoder screen.
+
     on_update:
       - lambda: |-
           for (auto touch: touches)  {
@@ -66,11 +68,10 @@ touchscreen:
               }
             }
           }
-```
 
-Two scripts triggered by touchscreen swipes in the `on_update` section above. They simply change pages in LVGL.
+# Two scripts triggered by touchscreen swipes in the `on_update` section above.
+# They simply change pages in LVGL.
 
-```
 script:
   - id: swipe_left
     then:
