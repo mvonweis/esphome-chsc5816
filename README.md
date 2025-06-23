@@ -19,11 +19,11 @@ There is a sample file `lilygo-touchscreen-test.yaml` that compiles and installs
 
 ### Touchscreen setup
 
-First, include the CHSC5816 component from this github repo.
+First, we include the CHSC5816 component from this github repo.
 
-Next, set up the internal I2C bus for the touch screen on pins 5 and 6, then the CHSC5816 chip on pins 8 and 9 (these pins are specific to the T-Encoder Pro). Touches trigger an interrupt, so there's no need to poll. 
+Next, we set up the internal I2C bus for the touch screen on pins 5 and 6, then the CHSC5816 chip on pins 8 and 9. Touches trigger an interrupt on pin 9, so there's no need to poll. These pins are specific to the T-Encoder Pro.
 
-Finally, set up an `on_touch` trigger for information logging and a swipe-detecting `on_update` trigger that calls some scripts. If you're not interested in swipe detection, you should remove the second trigger, as we haven't tested how it interferes with the normal UI in LVGL.
+Finally, we set up an `on_touch` trigger for information logging and a swipe-detecting `on_update` trigger that calls some scripts. If you're not interested in swipe detection, you should remove the second trigger and the two final scripts, as we haven't tested how they interfere with the normal UI in LVGL. We've found that it's useful to have a "dead zone" of 20-30 pixels. The T-Encoder screen is 325 dpi, so 30 pixels is something like 2 mm.
 
 ```
 external_components:
@@ -50,8 +50,7 @@ touchscreen:
       - lambda: |-
           ESP_LOGI("Touch on_touch:", "id=%d x=%d, y=%d", touch.id, touch.x, touch.y);
           
-# This is our best attempt at detecting swipes and triggering scripts. 30 pixels translates to
-# around 3 mm on the T-Encoder screen.
+# This is our best attempt at detecting swipes and triggering scripts.
 
     on_update:
       - lambda: |-
